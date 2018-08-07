@@ -113,18 +113,15 @@ func MountImage(
 ) (*os.File, func(), error) {
 	lo, err := NextLoopDevice()
 	if err != nil {
-		log.Println("n loop")
 		return nil, nil, err
 	}
 
 	if err := Loop(lo, image); err != nil {
-		log.Println("loop")
 		lo.Close()
 		return nil, nil, err
 	}
 
 	if err := syscall.Mount(lo.Name(), target, fstype, flags, data); err != nil {
-		log.Println("mount")
 		Unloop(lo)
 		lo.Close()
 		return nil, nil, err
