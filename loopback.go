@@ -32,10 +32,10 @@ import (
 )
 
 type (
-	// LoopInfo64 is the 64 bit loop info variant. This is used throughout
-	// this codebase. If you need to use LoopInfo due to a 32 bit program,
+	// loopInfo64 is the 64 bit loop info variant. This is used throughout
+	// this codebase. If you need to use loopInfo due to a 32 bit program,
 	// please open a bug on this library.
-	LoopInfo64 struct {
+	loopInfo64 struct {
 		loDevice         uint64 /* ioctl r/o */
 		loInode          uint64 /* ioctl r/o */
 		loRdevice        uint64 /* ioctl r/o */
@@ -45,48 +45,48 @@ type (
 		loEncryptType    uint32
 		loEncryptKeySize uint32 /* ioctl w/o */
 		loFlags          uint32 /* ioctl r/o */
-		loFileName       [LoNameSize]uint8
-		loCryptName      [LoNameSize]uint8
-		loEncryptKey     [LoKeySize]uint8 /* ioctl w/o */
+		loFileName       [loNameSize]uint8
+		loCryptName      [loNameSize]uint8
+		loEncryptKey     [loKeySize]uint8 /* ioctl w/o */
 		loInit           [2]uint64
 	}
 )
 
 const (
-	// LoopSetFd will associate the loop device with the open file
-	LoopSetFd = C.LOOP_SET_FD
+	// loopSetFd will associate the loop device with the open file
+	loopSetFd = C.LOOP_SET_FD
 
-	// LoopCtlGetFree will allocate or find a free loop device for use.
-	LoopCtlGetFree = C.LOOP_CTL_GET_FREE
+	// loopCtlGetFree will allocate or find a free loop device for use.
+	loopCtlGetFree = C.LOOP_CTL_GET_FREE
 
-	// LoopGetStatus64 will get the status of the loop device.
-	LoopGetStatus64 = C.LOOP_GET_STATUS64
+	// loopGetStatus64 will get the status of the loop device.
+	loopGetStatus64 = C.LOOP_GET_STATUS64
 
-	// LoopSetStatus64 will set the status of the loop device.
-	LoopSetStatus64 = C.LOOP_SET_STATUS64
+	// loopSetStatus64 will set the status of the loop device.
+	loopSetStatus64 = C.LOOP_SET_STATUS64
 
-	// LoopClrFd will disassociate the loop device from any file descriptor.
-	LoopClrFd = C.LOOP_CLR_FD
+	// loopClrFd will disassociate the loop device from any file descriptor.
+	loopClrFd = C.LOOP_CLR_FD
 
-	// LoopSetCapacity will resize a live loop device.
-	LoopSetCapacity = C.LOOP_SET_CAPACITY
+	// loopSetCapacity will resize a live loop device.
+	loopSetCapacity = C.LOOP_SET_CAPACITY
 )
 
 const (
-	// LoFlagsAutoClear will instruct the kernel to autodestruct on last close.
-	LoFlagsAutoClear = C.LO_FLAGS_AUTOCLEAR
+	// loFlagsAutoClear will instruct the kernel to autodestruct on last close.
+	loFlagsAutoClear = C.LO_FLAGS_AUTOCLEAR
 
-	// LoFlagsReadOnly requests the loopback device be read-only.
-	LoFlagsReadOnly = C.LO_FLAGS_READ_ONLY
+	// loFlagsReadOnly requests the loopback device be read-only.
+	loFlagsReadOnly = C.LO_FLAGS_READ_ONLY
 
-	// LoFlagsPartScan will allow automatic partition scanning.
-	LoFlagsPartScan = C.LO_FLAGS_PARTSCAN
+	// loFlagsPartScan will allow automatic partition scanning.
+	loFlagsPartScan = C.LO_FLAGS_PARTSCAN
 
-	// // LoKeySize is the length of the encryption key
-	// LoKeySize  = C.LO_KEY_SIZE
-	//
-	// // LoNameSize is the length of the file name.
-	// LoNameSize = C.LO_NAME_SIZE
+	// loKeySize is the length of the encryption key
+	loKeySize = C.LO_KEY_SIZE
+
+	// loNameSize is the length of the file name.
+	loNameSize = C.LO_NAME_SIZE
 )
 
 // syscalls will return an errno type (which implements error) for all calls,
@@ -109,7 +109,7 @@ func Loop(loopbackDevice, image *os.File) error {
 	_, _, err := syscall.Syscall(
 		syscall.SYS_IOCTL,
 		loopbackDevice.Fd(),
-		LoopSetFd,
+		loopSetFd,
 		image.Fd(),
 	)
 	return errnoIsErr(err)
@@ -119,7 +119,7 @@ func Loop(loopbackDevice, image *os.File) error {
 // preform the required call to the image to unloop the image mounted at
 // that location.
 func Unloop(loopbackDevice *os.File) error {
-	_, _, err := syscall.Syscall(syscall.SYS_IOCTL, loopbackDevice.Fd(), LoopClrFd, 0)
+	_, _, err := syscall.Syscall(syscall.SYS_IOCTL, loopbackDevice.Fd(), loopClrFd, 0)
 	return errnoIsErr(err)
 }
 
@@ -143,7 +143,7 @@ func nextUnallocatedLoop() (int, error) {
 		return 0, err
 	}
 	defer fd.Close()
-	index, _, err := syscall.Syscall(syscall.SYS_IOCTL, fd.Fd(), LoopCtlGetFree, 0)
+	index, _, err := syscall.Syscall(syscall.SYS_IOCTL, fd.Fd(), loopCtlGetFree, 0)
 	return int(index), errnoIsErr(err)
 }
 
