@@ -147,6 +147,10 @@ func nextUnallocatedLoop() (int, error) {
 	return int(index), errnoIsErr(err)
 }
 
+// UnmounterFunc will unmount the filesystem, unloop the file, and close the
+// held file descriptor. Be sure this is defer'ed in a sensible location!
+type UnmounterFunc func()
+
 // MountImage will get the next loopback device that isn't used, loopback the
 // provided image, and mount the loopback device to the target.
 func MountImage(
@@ -156,7 +160,7 @@ func MountImage(
 	fstype string,
 	flags uintptr,
 	data string,
-) (*os.File, func(), error) {
+) (*os.File, UnmounterFunc, error) {
 	lo, err := NextLoopDevice()
 	if err != nil {
 		return nil, nil, err
