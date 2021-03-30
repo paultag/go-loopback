@@ -1,3 +1,3 @@
-module pault.ag/go/go-loopback
+module pault.ag/go/loopback
 
 go 1.16
