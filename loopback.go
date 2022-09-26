@@ -132,7 +132,7 @@ func NextLoopDevice() (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	return os.Open(fmt.Sprintf("/dev/loop%d", loopInt))
+	return os.OpenFile(fmt.Sprintf("/dev/loop%d", loopInt), os.O_RDWR, 0)
 }
 
 // nextUnallocatedLoop will return the integer of the next loopback device we
